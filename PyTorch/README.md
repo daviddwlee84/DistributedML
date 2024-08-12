@@ -5,7 +5,8 @@
 
 1. Use [DistributedDataParallel (DDP)](https://pytorch.org/docs/stable/notes/ddp.html), if your model fits in a single GPU but you want to easily scale up training using multiple GPUs.
     - Use [torchrun](https://pytorch.org/docs/stable/elastic/run.html), to launch multiple pytorch processes if you are you using more than one node.
-    - See also: [Getting Started with Distributed Data Parallel](https://pytorch.org/tutorials/intermediate/ddp_tutorial.html)
+      - [Quickstart — PyTorch 2.4 documentation](https://pytorch.org/docs/stable/elastic/quickstart.html)
+    - See also: [**Getting Started with Distributed Data Parallel**](https://pytorch.org/tutorials/intermediate/ddp_tutorial.html)
 2. Use [FullyShardedDataParallel (FSDP)](https://pytorch.org/docs/stable/fsdp.html) when your model cannot fit on one GPU.
     - See also: [Getting Started with FSDP](https://pytorch.org/tutorials/intermediate/FSDP_tutorial.html)
 3. Use [Tensor Parallel (TP)](https://pytorch.org/docs/stable/distributed.tensor.parallel.html) and/or [Pipeline Parallel (PP)](https://pytorch.org/docs/main/distributed.pipelining.html) if you reach scaling limitations with FSDP.
