@@ -29,12 +29,66 @@ Start running basic DDP example on rank 0.
 
 Multi-node multi-worker
 
-TODO
+> 1. Two nodes, each have 2 GPUs
+> 2. Their networks are fine and can communicate with each other
+>    1. Test basic connectivity with `ping` to others' IP or hostname
+>    2. Test port by run this on master `nc -l 29400` and run this on worker `nc -zv $MASTER_ADDR 29400`
+> 3. rdzv (Rendezvous) tends to use hostname, make sure hostname is recognized by DNS, otherwise edit `/etc/hosts`
+
+```bash
+# On Master Node
+$ torchrun --nnodes=2 --nproc_per_node=2 --rdzv_id=100 --rdzv_backend=c10d --rdzv_endpoint=localhost:29400 --node_rank=0 `pwd`/elastic_ddp.py
+W0813 22:22:54.570086 140209818330880 torch/distributed/run.py:779]
+W0813 22:22:54.570086 140209818330880 torch/distributed/run.py:779] *****************************************
+W0813 22:22:54.570086 140209818330880 torch/distributed/run.py:779] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed.
+W0813 22:22:54.570086 140209818330880 torch/distributed/run.py:779] *****************************************
+Start running basic DDP example on rank 1.
+Start running basic DDP example on rank 0.
+W0813 22:23:32.979031 140204091807488 torch/distributed/elastic/rendezvous/dynamic_rendezvous.py:1267] The node 'xxxxx' has failed to send a keep-alive heartbeat to the rendezvous '100' due to an error of type RendezvousTimeoutError.
+
+# On Worker Node
+export MASTER_ADDR=...
+export MASTER_PORT=29400
+
+$ torchrun --nnodes=2 --nproc_per_node=2 --rdzv_id=100 --rdzv_backend=c10d --rdzv_endpoint=$MASTER_ADDR:$MASTER_PORT --node_rank=1 `pwd`/elastic_ddp.py
+W0813 22:23:01.756441 139918533302016 torch/distributed/run.py:779]
+W0813 22:23:01.756441 139918533302016 torch/distributed/run.py:779] *****************************************
+W0813 22:23:01.756441 139918533302016 torch/distributed/run.py:779] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed.
+W0813 22:23:01.756441 139918533302016 torch/distributed/run.py:779] *****************************************
+Start running basic DDP example on rank 3.
+Start running basic DDP example on rank 2.
+```
+
+Multi-node multi-worker - CNN
+
+
+```bash
+# Run it once, assume this folder is shared among machines and have same route
+python ../download_mnist.py
+
+# On Master Node
+$ torchrun --nnodes=2 --nproc_per_node=1 --rdzv_id=100 --rdzv_backend=c10d --rdzv_endpoint=l
+ocalhost:29400 --node_rank=0 `pwd`/elastic_ddp_cnn.py
+Initialized process group with rank 0.
+Running on rank 0. (local device: 0)
+Epoch [0/10], Batch [0/469], Loss: 2.3098
+Epoch [0/10], Batch [100/469], Loss: 0.0644
+Epoch [0/10], Batch [200/469], Loss: 0.1184
+Epoch [0/10], Batch [300/469], Loss: 0.0800
+Epoch [0/10], Batch [400/469], Loss: 0.0355
+Epoch [0/10] completed. Loss: 0.1915
+...
+
+# On Worker Node
+$ torchrun --nnodes=2 --nproc_per_node=1 --rdzv_id=100 --rdzv_backend=c10d --rdzv_endpoint=$MASTER_ADDR:$MASTER_PORT --node_rank=1 `pwd`/elastic_ddp_cnn.py                                                                                                                             ^Initialized process group with rank 1.
+Running on rank 1. (local device: 0)
+```
 
 ---
 
 - [Rendezvous — PyTorch 2.4 documentation](https://pytorch.org/docs/stable/elastic/rendezvous.html)
 - [Error Propagation — PyTorch 2.4 documentation](https://pytorch.org/docs/stable/elastic/errors.html)
+- [How to use `MASTER_ADDR` in a distributed training script · Issue #65992 · pytorch/pytorch](https://github.com/pytorch/pytorch/issues/65992)
 
 ```bash
 $ torchrun -h
