@@ -4,7 +4,7 @@
 [PyTorch Distributed Overview — PyTorch Tutorials 2.4.0+cu121 documentation](https://pytorch.org/tutorials/beginner/dist_overview.html)
 
 1. Use [DistributedDataParallel (DDP)](https://pytorch.org/docs/stable/notes/ddp.html), if your model fits in a single GPU but you want to easily scale up training using multiple GPUs.
-    - Use [torchrun](https://pytorch.org/docs/stable/elastic/run.html), to launch multiple pytorch processes if you are you using more than one node.
+    - Use [**torchrun**](https://pytorch.org/docs/stable/elastic/run.html), to launch multiple pytorch processes if you are you using more than one node.
       - [Quickstart — PyTorch 2.4 documentation](https://pytorch.org/docs/stable/elastic/quickstart.html)
     - See also: [**Getting Started with Distributed Data Parallel**](https://pytorch.org/tutorials/intermediate/ddp_tutorial.html)
 2. Use [FullyShardedDataParallel (FSDP)](https://pytorch.org/docs/stable/fsdp.html) when your model cannot fit on one GPU.
@@ -34,3 +34,8 @@ Which backend to use?
 Tutorial
 
 - [Basics of Distributed Training — PyTorch edition | by Rohit Kewalramani | Medium](https://medium.com/@rohit.k/basics-of-distributed-training-pytorch-edition-5cbd8fb06bf8)
+
+---
+
+- [pytorch/elastic: PyTorch elastic training](https://github.com/pytorch/elastic)
+- [Torch Distributed Elastic — PyTorch 2.4 documentation](https://pytorch.org/docs/stable/distributed.elastic.html)
