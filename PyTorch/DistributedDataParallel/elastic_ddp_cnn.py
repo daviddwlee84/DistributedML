@@ -70,8 +70,9 @@ def train(epochs=5):
     )
 
     # Training loop
-    for epoch in range(epochs):
+    for epoch in range(1, epochs + 1):
         ddp_model.train()
+        train_sampler.set_epoch(epoch)  # works when use shuffle
         epoch_loss = 0.0
         for batch_idx, (data, target) in enumerate(train_loader):
             data, target = data.to(device_id), target.to(device_id)

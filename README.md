@@ -1,4 +1,4 @@
-# Distributed Machine Learning (multiple machine (nodes), multiple GPUs)
+# Distributed Machine Learning (multiple machine (nodes), multiple GPUs (workers))
 
 ## Getting Started
 
