@@ -11,8 +11,29 @@ import os
 curr_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-def setup_and_get_rank(backend: Literal["nccl", "gloo", "mpi", "ucc"] = "nccl") -> int:
-    # https://pytorch.org/docs/stable/distributed.html#backends
+def setup_and_get_rank(
+    backend: Literal["nccl", "gloo", "mpi", "ucc", None] = None
+) -> int:
+    """
+    https://pytorch.org/docs/stable/distributed.html#backends
+
+    dist.Backend.xxx
+    UNDEFINED = "undefined"
+    GLOO = "gloo"
+    NCCL = "nccl"
+    UCC = "ucc"
+    MPI = "mpi"
+
+    PyTorch Version 2.4.0
+    Currently when no backend is specified, both gloo and nccl backends will be created.
+    The gloo backend will be used for collectives with CPU tensors and the nccl backend will be used for collectives with CUDA tensors.
+
+    PyTorch Version 1.13.0
+    TypeError: init_process_group() missing 1 required positional argument: 'backend'
+    PyTorch Version 2.4.0
+    gloo will have additional memory on GPU 0 issue
+    but works fine when setting backend to None
+    """
     dist.init_process_group(backend)
     rank = dist.get_rank()
     print(f"Initialized process group with rank {rank}.")
