@@ -1,3 +1,7 @@
+# PyTorch Distributed Data Parallel (DDP)
+
+## Most basic example (good for testing environment)
+
 ```bash
 # TODO: 
 $ python single_forward_backward.py
@@ -15,9 +19,12 @@ Running DDP with model parallel example on rank 1.
 Running DDP with model parallel example on rank 0.
 ```
 
-Single-node multi-worker
+## Basic torchrun
+
+### Single-node multi-worker
 
 ```bash
+# NOTE: `pwd` is not required, but you should make sure you are "at the same directory with the file"
 $ torchrun --standalone --nnodes=1 --nproc-per-node=2 `pwd`/elastic_ddp.py
 W0813 20:04:44.287418 139760121915136 torch/distributed/run.py:779]
 W0813 20:04:44.287418 139760121915136 torch/distributed/run.py:779] *****************************************
@@ -27,7 +34,7 @@ Start running basic DDP example on rank 1.
 Start running basic DDP example on rank 0.
 ```
 
-Multi-node multi-worker
+### Multi-node multi-worker
 
 > 1. Two nodes, each have 2 GPUs
 > 2. Their networks are fine and can communicate with each other
@@ -59,8 +66,33 @@ Start running basic DDP example on rank 3.
 Start running basic DDP example on rank 2.
 ```
 
-Multi-node multi-worker - CNN
+## CNN Example
 
+### Single-node multi-worker - CNN
+
+```bash
+$ torchrun --nnodes=1 --nproc_per_node=2 --rdzv_id=100 --rdzv_backend=c10d --rdzv_endpoint=localhost:29400 --node_rank=0 `pwd`/elastic_ddp_cnn.py
+WARNING:torch.distributed.run:
+*****************************************
+Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed.
+*****************************************
+Initialized process group with rank 1.
+Initialized process group with rank 0.
+Running on rank 1. (local device: 1)
+Running on rank 0. (local device: 0)
+Epoch [0/10], Batch [0/469], Loss: 2.2978
+Epoch [0/10], Batch [100/469], Loss: 0.0704
+Epoch [0/10], Batch [200/469], Loss: 0.1119
+Epoch [0/10], Batch [300/469], Loss: 0.0616
+Epoch [0/10], Batch [400/469], Loss: 0.0290
+Epoch [0/10] completed. Loss: 0.1745
+Epoch [1/10], Batch [0/469], Loss: 0.0423
+Epoch [1/10], Batch [100/469], Loss: 0.0457
+Epoch [1/10], Batch [200/469], Loss: 0.0271
+...
+```
+
+### Multi-node multi-worker - CNN
 
 ```bash
 # Run it once, assume this folder is shared among machines and have same route
@@ -152,3 +184,30 @@ optional arguments:
   --master_port MASTER_PORT
                         Port on the master node (rank 0) to be used for communication during distributed training.
 ```
+
+---
+
+## Trouble Shooting
+
+### Master Node/Worker (Rank 0) Got Additional Memory Consumption
+
+- [Memory consumption for the model get doubled after wrapped with DDP - distributed - PyTorch Forums](https://discuss.pytorch.org/t/memory-consumption-for-the-model-get-doubled-after-wrapped-with-ddp/130837/4)
+
+> the Reducer will create gradient buckets for each parameter, so that the memory usage after wrapping the model into DDP will be 2 x model_parameter_size. Note that the parameter size of a model is often much smaller than the activation size so that this memory increase might or might not be significant.
+>
+> DDP maintains one buffer that is the same size as model size in default, so it is expected the memory is double of model size. If you set ‘gradients_as_bucket_view=True’, the peak memory allocation will be reduced around one copy of model size
+
+- [**DDP: why does every process allocate memory of GPU 0 and how to avoid it? · Issue #969 · pytorch/examples**](https://github.com/pytorch/examples/issues/969)
+- [**Extra 10GB memory on GPU 0 in DDP tutorial - distributed - PyTorch Forums**](https://discuss.pytorch.org/t/extra-10gb-memory-on-gpu-0-in-ddp-tutorial/118113)
+
+```py
+# Solution!
+torch.cuda.set_device(rank)
+torch.cuda.empty_cache()
+
+# ... before model initialization
+```
+
+> - [Inspecting memory usage with DDP and workers - distributed - PyTorch Forums](https://discuss.pytorch.org/t/inspecting-memory-usage-with-ddp-and-workers/114478)
+> - [DistributedDataParallel high peak memory usage with find_unused_parameters=True · Issue #74115 · pytorch/pytorch](https://github.com/pytorch/pytorch/issues/74115)
+> - [pytorch - Model takes twice the memory footprint with distributed data parallel - Stack Overflow](https://stackoverflow.com/questions/68949954/model-takes-twice-the-memory-footprint-with-distributed-data-parallel)

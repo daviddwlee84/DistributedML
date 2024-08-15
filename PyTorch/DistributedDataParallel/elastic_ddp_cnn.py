@@ -17,7 +17,7 @@ def setup_and_get_rank() -> int:
     return rank
 
 
-def cleanup():
+def cleanup() -> None:
     dist.destroy_process_group()
 
 
@@ -40,11 +40,17 @@ class SimpleCNN(nn.Module):
         return x
 
 
-def train(epochs=5):
+def train(epochs: int = 5) -> None:
     rank = setup_and_get_rank()
     # NOTE: device_id should be unique, so make sure you have proper worker number
     device_id = rank % torch.cuda.device_count()
     print(f"Running on rank {rank}. (local device: {device_id})")
+
+    # NOTE: to avoid additional memory consumption on GPU 0
+    # https://github.com/pytorch/examples/issues/969
+    # https://discuss.pytorch.org/t/extra-10gb-memory-on-gpu-0-in-ddp-tutorial/118113
+    torch.cuda.set_device(rank)
+    torch.cuda.empty_cache()
 
     # Create model and move it to GPU with id rank
     model = SimpleCNN().to(device_id)

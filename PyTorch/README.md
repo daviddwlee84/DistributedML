@@ -34,6 +34,14 @@ Which backend to use?
 Tutorial
 
 - [Basics of Distributed Training — PyTorch edition | by Rohit Kewalramani | Medium](https://medium.com/@rohit.k/basics-of-distributed-training-pytorch-edition-5cbd8fb06bf8)
+- [Efficient Training on Multiple GPUs](https://huggingface.co/docs/transformers/perf_train_gpu_many)
+- [What is Distributed Data Parallel (DDP) — PyTorch Tutorials 2.4.0+cu121 documentation](https://pytorch.org/tutorials/beginner/ddp_series_theory.html)
+  - [Multi GPU training with DDP — PyTorch Tutorials 2.4.0+cu121 documentation](https://pytorch.org/tutorials/beginner/ddp_series_multigpu.html)
+- [Multinode Training — PyTorch Tutorials 2.4.0+cu121 documentation](https://pytorch.org/tutorials/intermediate/ddp_series_multinode.html)
+
+Example
+
+- [examples/imagenet/main.py at main · pytorch/examples](https://github.com/pytorch/examples/blob/26de41904319c7094afc53a3ee809de47112d387/imagenet/main.py#L136C17-L141)
 
 ---
 
