@@ -211,3 +211,11 @@ torch.cuda.empty_cache()
 > - [Inspecting memory usage with DDP and workers - distributed - PyTorch Forums](https://discuss.pytorch.org/t/inspecting-memory-usage-with-ddp-and-workers/114478)
 > - [DistributedDataParallel high peak memory usage with find_unused_parameters=True · Issue #74115 · pytorch/pytorch](https://github.com/pytorch/pytorch/issues/74115)
 > - [pytorch - Model takes twice the memory footprint with distributed data parallel - Stack Overflow](https://stackoverflow.com/questions/68949954/model-takes-twice-the-memory-footprint-with-distributed-data-parallel)
+
+### When use `gloo` or not specify backend: `Gloo connectFullMesh failed with [../third_party/gloo/gloo/transport/tcp/pair.cc:144] error`
+
+- [Getting Gloo error when connecting server and client over VPN from different systems - distributed / distributed-rpc - PyTorch Forums](https://discuss.pytorch.org/t/getting-gloo-error-when-connecting-server-and-client-over-vpn-from-different-systems/191076)
+- [Strange behaviour of GLOO tcp transport - distributed - PyTorch Forums](https://discuss.pytorch.org/t/strange-behaviour-of-gloo-tcp-transport/66651/27?page=2)
+
+1. Use `ip a` (`ifconfig`) to find the interface corresponding to your IP address
+2. Set `GLOO_SOCKET_IFNAME` to it. e.g. `export GLOO_SOCKET_IFNAME='eno1'`
