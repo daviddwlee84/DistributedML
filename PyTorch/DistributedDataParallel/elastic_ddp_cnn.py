@@ -1,3 +1,4 @@
+from typing import Literal
 import torch
 import torch.distributed as dist
 import torch.nn as nn
@@ -10,8 +11,9 @@ import os
 curr_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-def setup_and_get_rank() -> int:
-    dist.init_process_group("nccl")
+def setup_and_get_rank(backend: Literal["nccl", "gloo", "mpi", "ucc"] = "nccl") -> int:
+    # https://pytorch.org/docs/stable/distributed.html#backends
+    dist.init_process_group(backend)
     rank = dist.get_rank()
     print(f"Initialized process group with rank {rank}.")
     return rank
